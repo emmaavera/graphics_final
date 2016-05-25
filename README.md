@@ -1,2 +1,1 @@
-# graphics_final
-Emma &amp; Mary's final graphics project
+# graphics_hw8_mdl_animations
