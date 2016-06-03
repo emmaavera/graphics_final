@@ -8,6 +8,7 @@
 #include "matrix.h"
 #include "gmath.h"
 
+
 /*======== void add_polygon() ==========
 Inputs:   struct matrix *surfaces
          double x0
@@ -49,34 +50,153 @@ triangles
 jdyrlandweaver
 ====================*/
 void draw_polygons( struct matrix *polygons, screen s, color c ) {
-  
+  //polygons->m[i][j] = FORMAT
   int i;  
+  int left,right;
+
+//The bottom to top x increment (bt), bottom to middle(bm), middle to top(mt)
+  double bt_inc,bm_inc,mt_inc;
+
   for( i=0; i < polygons->lastcol-2; i+=3 ) {
-
+    // determine which pts are top/mid/bot
     if ( calculate_dot( polygons, i ) < 0 ) {
-      draw_line( polygons->m[0][i], //x1
-		 polygons->m[1][i],        //y1
-		 polygons->m[0][i+1],     //x2
-		 polygons->m[1][i+1],    //y2
-		 s, c);
-      draw_line( polygons->m[0][i+1], //x2
-		 polygons->m[1][i+1],        //y2
-		 polygons->m[0][i+2],       //x3
-		 polygons->m[1][i+2],      //y3
-		 s, c);
-      draw_line( polygons->m[0][i+2],
-		 polygons->m[1][i+2],
-		 polygons->m[0][i],
-		 polygons->m[1][i],
-		 s, c);
+          printf("drawing...\n");
+          draw_line( polygons->m[0][i], //x1
+      		 polygons->m[1][i],        //y1
+      		 polygons->m[0][i+1],     //x2
+      		 polygons->m[1][i+1],    //y2
+      		 s, c);
+          draw_line( polygons->m[0][i+1], //x2
+      		 polygons->m[1][i+1],        //y2
+      		 polygons->m[0][i+2],       //x3
+      		 polygons->m[1][i+2],      //y3
+      		 s, c);
+          draw_line( polygons->m[0][i+2],
+      		 polygons->m[1][i+2],
+      		 polygons->m[0][i],
+      		 polygons->m[1][i],
+      		 s, c);
+          printf("drawing done... wait for scanline...\n", );
+          scan_line( polygons->m[0][i],  polygons->m[1][i],
+           polygons->m[0][i+1],polygons->m[1][i+1],
+           polygons->m[0][i+2],polygons->m[1][i+2],
+           s, c);
+          printf("scanline complete!\n");
     }
-
-    //This is where scanline conversion will go using 
-    // x1, y1, x2, y2, x3, and y3 as the points of the triangle
-
   }
 }
 
+void scanline (double x0, double y0, double x1, double y1,
+                double x2, double y2, screen s, color c){
+  double xt, xm, xb, yt, ym, yb;
+  double d0, d1; //delta0 and delata1
+  double xL, yL, xR, yR;
+
+  c.blue = rand()%255;
+  c.green = 0;
+  c.red = rand()%255;
+
+  if ( y2 >= y1 && y2 >= y0 ){
+    yt = y2; 
+    xt = x2;
+    if (y1 > y0){
+      ym = y1;
+      xm = x1;
+      yb = y0;
+      xb = x0;
+    } 
+    else {
+      ym = y0; 
+      xm = x0;
+      yb = y1;
+      xb = x1;
+    }
+  }//end of if
+  else if (y1 >= y2 && y1 >= y0){
+    yt = y1;
+    xt = x1;
+    if (y2 > y0){
+      ym = y2;
+      xm = x2;
+      yb = y0;
+      xb = x0;
+    }
+    else {
+      ym = y0;
+      xm = x0;
+      yb = y2;
+      xb = y2;
+    }
+  }//end of else if
+  else {
+    yt = y0;
+    xt = x0;
+    if (y1 > y2){
+      ym = y1;
+      xm = x1;
+      yb = y2;
+      xb = x2;
+    }
+    else {
+      ym = y2;
+      xm = x2;
+      yb = y1;
+      xb = x1;
+    }
+  }//end of else
+
+  //typecast to ints
+  yt = (int)yt;
+  xt = (int)xt;
+  ym = (int)ym;
+  xm = (int)xm;
+  yb = (int)yb;
+  xb = (int)xb;
+
+  if ( (double)(yt - yb) > .001){
+    d0 = (double)((double)(xt-xb) / (double)(yt - yb));
+  }
+  else {
+    d0 = xt-xb;
+  }
+
+  if ( (double)(ym - yb) > .001){
+    d1 = (double)((double)(xm-xb) / (double)(ym - yb));
+  }
+  else {
+    d1 = xm-xb;
+  }
+  
+  //extra checks
+  if (d1 > 9999 || d1 < -9999){
+    d1 = xm-xb;
+  }
+  if (d0 > 9999 || d0 < -9999){
+    d0 = xt-xb;
+  }
+
+  
+  xR = xb;
+  xL = xb;
+  //yR = yb; yL = yb; ???
+  draw_line( xL, yb, xR, yb, s, c );
+  
+  while (yb <= ym){ //(xb + delta0, yb+1) -> (xb+ delta1, yb+1)
+    xL += d0;
+    xR += d1;
+    yb += 1;
+    draw_line( xL, yb, xR, yb, s, c );
+  }
+
+  d1 = ((xt - xm) / (yt - ym));
+  while (ym < yt){ //(xb + delta0, yb+1) -> (xb+ delta1, yb+1)
+    xL += d0;
+    xR += d1;
+    ym += 1;
+    draw_line( xL, ym, xR, ym, s, c );
+  }
+  draw_line( xL, yt, xR, yt, s, c );
+}
 
 /*======== void add_sphere() ==========
   Inputs:   struct matrix * points
