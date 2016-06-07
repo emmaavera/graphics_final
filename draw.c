@@ -52,10 +52,6 @@ jdyrlandweaver
 void draw_polygons( struct matrix *polygons, screen s, color c ) {
   //polygons->m[i][j] = FORMAT
   int i;  
-  int left,right;
-
-//The bottom to top x increment (bt), bottom to middle(bm), middle to top(mt)
-  double bt_inc,bm_inc,mt_inc;
 
   for( i=0; i < polygons->lastcol-2; i+=3 ) {
     // determine which pts are top/mid/bot
@@ -76,7 +72,7 @@ void draw_polygons( struct matrix *polygons, screen s, color c ) {
       		 polygons->m[0][i],
       		 polygons->m[1][i],
       		 s, c);
-          printf("drawing done... wait for scanline...\n", );
+          printf("drawing done... wait for scanline...\n");
           scan_line( polygons->m[0][i],  polygons->m[1][i],
            polygons->m[0][i+1],polygons->m[1][i+1],
            polygons->m[0][i+2],polygons->m[1][i+2],
