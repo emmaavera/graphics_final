@@ -247,6 +247,7 @@ void my_main( int polygons ) {
   screen t;
   clear_screen(t);
   color g;
+  zbuff z;
 
   double factor;
   struct vary_node **knobs;
@@ -269,6 +270,7 @@ void my_main( int polygons ) {
   struct vary_node * current;
   j=0;
   while(j<num_frames){
+    set_zbuffer(z);
     tmp=new_matrix(4,4);
     struct stack *s=new_stack();
     if (is_anim){
@@ -292,7 +294,7 @@ void my_main( int polygons ) {
 		    step);
 	//apply the current top origin
 	matrix_mult( s->data[ s->top ], tmp );
-	draw_polygons( tmp, t, g );
+	draw_polygons( tmp, t, z, g );
 	tmp->lastcol = 0;
 	break;
 
@@ -304,7 +306,7 @@ void my_main( int polygons ) {
 		   op[i].op.torus.r1,
 		   step);
 	matrix_mult( s->data[ s->top ], tmp );
-	draw_polygons( tmp, t, g );
+	draw_polygons( tmp, t, z, g );
 	tmp->lastcol = 0;
 	break;
 
@@ -316,7 +318,7 @@ void my_main( int polygons ) {
 		 op[i].op.box.d1[1],
 		 op[i].op.box.d1[2]);
 	matrix_mult( s->data[ s->top ], tmp );
-	draw_polygons( tmp, t, g );
+	draw_polygons( tmp, t, z, g );
 	tmp->lastcol = 0;
 	break;
 
@@ -327,7 +329,7 @@ void my_main( int polygons ) {
 		  op[i].op.line.p1[0],
 		  op[i].op.line.p1[1],
 		  op[i].op.line.p1[1]);
-	draw_lines( tmp, t, g );
+	draw_lines( tmp, t, z, g );
 	tmp->lastcol = 0;
 	break;
 

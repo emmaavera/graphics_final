@@ -82,6 +82,20 @@ void draw_polygons( struct matrix *polygons, screen s, color c ) {
   }
 }
 
+/*======== void scanline() ==========
+Inputs:   double x0
+          double y0
+          double x1
+          double y1
+          double x2
+          double y2
+          screen s
+          color c 
+Returns: 
+scanline conversion
+
+====================*/
+
 void scanline (double x0, double y0, double x1, double y1,
                 double x2, double y2, screen s, color c){
   double xt, xm, xb, yt, ym, yb;
