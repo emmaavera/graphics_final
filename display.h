@@ -3,7 +3,7 @@
 
 void plot( screen s, color c, int x, int y);
 void clear_screen( screen s);
-void set_zbuffer (zbuff z);
+//void set_zbuffer (zbuff z);
 void save_ppm( screen s, char *file);
 void save_extension( screen s, char *file);
 void display( screen s);

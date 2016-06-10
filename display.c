@@ -108,7 +108,7 @@ Inputs:   zbuff z
 Returns: 
 Fills zbuffer with minimum z values.
 ====================*/
-void set_zbuffer (zbuff z){
+/*void set_zbuffer (zbuff z){
   int x = 0;
   int y = 0;
 
@@ -117,7 +117,7 @@ void set_zbuffer (zbuff z){
       z[x][y] = MIN_Z;
     }
   }
-}
+}*/
 
 /*======== void save_ppm() ==========
 Inputs:   screen s
