@@ -37,7 +37,10 @@ void add_polygon( struct matrix *polygons,
 }
 
 /*======== void scan_line() ==========
-Inputs:   
+Inputs:   double x0, double y0,
+    double x1, double y1,
+    double x2, double y2,
+    screen s, color c
 ====================*/
 
 void scan_line( double x0, double y0,
@@ -53,35 +56,56 @@ void scan_line( double x0, double y0,
   c.red = rand()%255;
   
   //c.red =(int) (x1*y1 + x2*y2)%255;
+  //setting vars
   if ( y2 >= y1 && y2 >= y0 ){
-    yt = y2; xt = x2;
+    yt = y2;
+    xt = x2;
     if ( y1 > y0 ){
-      ym = y1; xm = x1;
-      yb = y0; xb = x0;
-    } else {
-      ym = y0; xm = x0;
-      yb = y1; xb = x1;
+      ym = y1;
+      xm = x1;
+      yb = y0;
+      xb = x0;
+    } 
+    else {
+      ym = y0;
+      xm = x0;
+      yb = y1;
+      xb = x1;
     }
-  } else if ( y1 >= y2 && y1 >= y0 ){
-    yt = y1; xt = x1;
+  }
+  else if ( y1 >= y2 && y1 >= y0 ){
+    yt = y1;
+    xt = x1;
     if ( y2 > y0 ){
-      ym = y2; xm = x2;
-      yb = y0; xb = x0;
-    } else {
-      ym = y0; xm = x0;
-      yb = y2; xb = y2;
+      ym = y2;
+      xm = x2;
+      yb = y0;
+      xb = x0;
     }
-  } else {
+    else {
+      ym = y0;
+      xm = x0;
+      yb = y2;
+      xb = y2;
+    }
+  } 
+  else {
     yt = y0; xt = x0;
     if ( y1 > y2 ){
-      ym = y1; xm = x1;
-      yb = y2; xb = x2;
-    } else {
-      ym = y2; xm = x2;
-      yb = y1; xb = x1;
+      ym = y1;
+      xm = x1;
+      yb = y2;
+      xb = x2;
+    }
+    else {
+      ym = y2;
+      xm = x2;
+      yb = y1;
+      xb = x1;
     }
   }
 
+//typecasting
   yt = (int)yt;
   xt = (int)xt;
   ym = (int)ym;
@@ -89,14 +113,17 @@ void scan_line( double x0, double y0,
   yb = (int)yb;
   xb = (int)xb;
 
+//assign d0 and d1
   if ( (double)(yt - yb) > .001){
     d0 = (double)((double)(xt-xb) / (double)(yt - yb));
-  } else {
+  }
+  else {
     d0 = xt-xb;
   }
   if ( (double)(ym - yb) > .001){
     d1 = (double)((double)(xm-xb) / (double)(ym - yb)); // d1 = ( ( xt - xm ) / ( yt - ym ) );
-  } else {
+  }
+  else {
     d1 = xm-xb;
   }
     
