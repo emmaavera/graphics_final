@@ -14,7 +14,6 @@ a pixel as a color triple
 #define XRES 500
 #define YRES 500
 #define MAX_COLOR 255
-#define MIN_Z -100000
 
 /*
   Every point has an individual int for
@@ -36,8 +35,6 @@ struct point_t {
   c.blue = 187;
 */
 typedef struct point_t color;
-
-typedef double zbuff[XRES][YRES]; //buffer to see which pts are closest on the z-axis
 
 /*
   Likewise, we can use screen as a data type representing

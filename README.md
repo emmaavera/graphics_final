@@ -1,1 +1,0 @@
-# graphics_hw8_mdl_animations
