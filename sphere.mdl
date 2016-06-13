@@ -1,6 +1,6 @@
 //head
 push
-move 200 201 0
-sphere 0 0 0 50
+move 200 200 0
+sphere 0 0 0 100
 display
 quit

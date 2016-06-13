@@ -104,7 +104,18 @@ void scan_line( double x0, double y0,
       xb = x1;
     }
   }
-
+  /*
+  if (xm > 250 || xm < 150){
+    printf("xm extreme 0\n");
+  }
+  if (xb > 250 || xb < 150){
+    printf("xb extreme 0\n");
+  }
+  if (xt > 250 || xt < 150){
+    printf("xt extreme 0 \n");
+  }
+*/
+/*
 //typecasting
   yt = (int)yt;
   xt = (int)xt;
@@ -112,7 +123,18 @@ void scan_line( double x0, double y0,
   xm = (int)xm;
   yb = (int)yb;
   xb = (int)xb;
-
+  */
+/*
+  if (xm >= 250 || xm <= 150){
+    printf("xm extreme 00\n");
+  }
+  if (xb >= 250 || xb <= 150){
+    printf("xb extreme 00\n");
+  }
+  if (xt >= 250 || xt <= 150){
+    printf("xt extreme 00 \n");
+  }
+*/
 //assign d0 and d1
   if ( (double)(yt - yb) > .001){
     d0 = (double)((double)(xt-xb) / (double)(yt - yb));
@@ -123,10 +145,19 @@ void scan_line( double x0, double y0,
   if ( (double)(ym - yb) > .001){
     d1 = (double)((double)(xm-xb) / (double)(ym - yb)); // d1 = ( ( xt - xm ) / ( yt - ym ) );
   }
-  else {
-    d1 = xm-xb;
-  }
+
     
+/*
+  if (xm >= 250 || xm <= 150){
+    printf("xm extreme 01\n");
+  }
+  if (xb >= 250 || xb <= 150){
+    printf("xb extreme 01\n");
+  }
+  if (xt >= 250 || xt <= 150){
+    printf("xt extreme 01 \n");
+  }
+  */
   // d0 is 0, d1 is -inf
   
   if (d1 > 9999 || d1 < -9999){
@@ -135,38 +166,96 @@ void scan_line( double x0, double y0,
   if (d0 > 9999 || d0 < -9999){
     d0 = xt-xb;
   }
-
+/*
+  if (xm >= 250 || xm <= 150){
+    printf("xm extreme 02\n");
+  }
+  if (xb >= 250 || xb <= 150){
+    printf("xb extreme 02\n");
+  }
+  if (xt >= 250 || xt <= 150){
+    printf("xt extreme 02\n");
+  }
+*/
   printf("yt is: %f\nym is: %f \nyb is: %f\n", yt, ym, yb);
   printf("xt is: %f\nxm is: %f \nxb is: %f\n", xt, xm, xb);
   
-  printf("d0 is: %f\n", d0);
-  printf("d1 is: %f\n", d1);
+  printf("1: d0 is: %f\n", d0);
+  printf("1: d1 is: %f\n", d1);
   
   xR = xb; xL = xb;
   //yR = yb; yL = yb;
+/*
+  if (xm >= 250 || xm <= 150){
+    printf("xm extreme 03\n");
+  }
+  if (xb >= 250 || xb <= 150){
+    printf("xb extreme 03\n");
+  }
+  if (xt >= 250 || xt <= 150){
+    printf("xt extreme 03\n");
+  }
+
+  if (xm==xt){
+    printf("xm equals xt\n");
+  }
+  if (xm==xb){
+    printf("xm equals xb\n");
+  }
+  if (xt==xb){
+    printf("xt equals xb\n");
+  }
+*/
   draw_line( xL, yb, xR, yb, s, c );
   
-  while ( yb <= ym ){
+  while ( yb < ym ){
+    draw_line( xL, yb, xR, yb, s, c );
+
     //(xb + Delta0, yb+1) → (xb+ Delta1, yb+1)
     xL += d0;
     xR += d1;
     yb += 1;
-    draw_line( xL, yb, xR, yb, s, c );
+
+    if (xL >= 300 || xL <= 100){
+      printf("xL extreme 01\n");
+    }
+    if (xR >= 300 || xR <= 100){
+      printf("xR extreme 01\n");
+    }
     //printf("From %f to %f\n", xL, xR);
   }
 
-  d1 = ( ( xt - xm ) / ( yt - ym ) );
+  if ((double)(yt - ym) > .001) {
+    d1 = ((xt-xm) / (double)(yt -ym));
+  }
+  else{ 
+    d1 = xt - xm;
+  }
+
+
+  //d1 = ( ( xt - xm ) / ( yt - ym ) );
+  xR = xm;
+
+  printf("2: d0 is: %f\n", d0);
+  printf("2: d1 is: %f\n", d1);
+
   while ( ym < yt ){
     //(xb + Delta0, yb+1) → (xb+ Delta1, yb+1)
     xL += d0;
     xR += d1;
     ym += 1;
+    if (xL >= 300 || xL <= 100){
+      printf("xL extreme 02\n");
+    }
+    if (xR >= 300 || xR <= 100){
+      printf("xR extreme 02\n");
+    }
     draw_line( xL, ym, xR, ym, s, c );
     //printf("In ym<=yt\n");
   }
   //xL += d0;
   //xR += d1;
-  draw_line( xL, yt, xR, yt, s, c );
+  //draw_line( xL, yt, xR, yt, s, c );
   
 }
 /*======== void draw_polygons() ==========
