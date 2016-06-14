@@ -49,62 +49,10 @@ void scan_line( struct matrix *polygons,
   double xt, xm, xb, yt, ym, yb, xL, xR, yL, yR;
   double d0, d1;
 
-  //printf("y0: %f y1: %f y2:%f\n", y0,y1,y2);
   c.blue = 200;
   c.green = rand()%255;
   c.red = rand()%255;
-  
-  //c.red =(int) (x1*y1 + x2*y2)%255;
-  //setting vars
-  /*
-  if ( y2 >= y1 && y2 >= y0 ){
-    yt = y2;
-    xt = x2;
-    if ( y1 > y0 ){
-      ym = y1;
-      xm = x1;
-      yb = y0;
-      xb = x0;
-    } 
-    else {
-      ym = y0;
-      xm = x0;
-      yb = y1;
-      xb = x1;
-    }
-  }
-  else if ( y1 >= y2 && y1 >= y0 ){
-    yt = y1;
-    xt = x1;
-    if ( y2 > y0 ){
-      ym = y2;
-      xm = x2;
-      yb = y0;
-      xb = x0;
-    }
-    else {
-      ym = y0;
-      xm = x0;
-      yb = y2;
-      xb = y2;
-    }
-  } 
-  else {
-    yt = y0; xt = x0;
-    if ( y1 > y2 ){
-      ym = y1;
-      xm = x1;
-      yb = y2;
-      xb = x2;
-    }
-    else {
-      ym = y2;
-      xm = x2;
-      yb = y1;
-      xb = x1;
-    }
-  }
-  */
+
   float x0, y0, x1, y1;  
   int xy=1;
 
@@ -156,38 +104,8 @@ void scan_line( struct matrix *polygons,
   ym = polygons->m[1][i+M];
   xb = polygons->m[0][i+B];
   yb = polygons->m[1][i+B];
-  /*
-  if (xm > 250 || xm < 150){
-    printf("xm extreme 0\n");
-  }
-  if (xb > 250 || xb < 150){
-    printf("xb extreme 0\n");
-  }
-  if (xt > 250 || xt < 150){
-    printf("xt extreme 0 \n");
-  }
-*/
-/*
-//typecasting
-  yt = (int)yt;
-  xt = (int)xt;
-  ym = (int)ym;
-  xm = (int)xm;
-  yb = (int)yb;
-  xb = (int)xb;
-  */
-/*
-  if (xm >= 250 || xm <= 150){
-    printf("xm extreme 00\n");
-  }
-  if (xb >= 250 || xb <= 150){
-    printf("xb extreme 00\n");
-  }
-  if (xt >= 250 || xt <= 150){
-    printf("xt extreme 00 \n");
-  }
-*/
-//assign d0 and d1
+
+  //assign d0 and d1
   if ( (double)(yt - yb) > .001){
     d0 = (double)((double)(xt-xb) / (double)(yt - yb));
   }
@@ -197,20 +115,6 @@ void scan_line( struct matrix *polygons,
   if ( (double)(ym - yb) > .001){
     d1 = (double)((double)(xm-xb) / (double)(ym - yb)); // d1 = ( ( xt - xm ) / ( yt - ym ) );
   }
-
-    
-/*
-  if (xm >= 250 || xm <= 150){
-    printf("xm extreme 01\n");
-  }
-  if (xb >= 250 || xb <= 150){
-    printf("xb extreme 01\n");
-  }
-  if (xt >= 250 || xt <= 150){
-    printf("xt extreme 01 \n");
-  }
-  */
-  // d0 is 0, d1 is -inf
   
   if (d1 > 9999 || d1 < -9999){
     d1 = xm-xb;
@@ -219,24 +123,16 @@ void scan_line( struct matrix *polygons,
     d0 = xt-xb;
   }
 
+  /*
   printf("yt is: %f\nym is: %f \nyb is: %f\n", yt, ym, yb);
   printf("xt is: %f\nxm is: %f \nxb is: %f\n", xt, xm, xb);
   
-  printf("1: d0 is: %f\n", d0);
-  printf("1: d1 is: %f\n\n", d1);
+  printf("d0 is: %f\n", d0);
+  printf("d1 is: %f\n\n", d1);
+  */
   
   xR = xb; xL = xb;
-  //yR = yb; yL = yb;
 /*
-  if (xm >= 250 || xm <= 150){
-    printf("xm extreme 03\n");
-  }
-  if (xb >= 250 || xb <= 150){
-    printf("xb extreme 03\n");
-  }
-  if (xt >= 250 || xt <= 150){
-    printf("xt extreme 03\n");
-  }
 
   if (xm==xt){
     printf("xm equals xt\n");
@@ -249,7 +145,7 @@ void scan_line( struct matrix *polygons,
   }
 */
   draw_line( xL, yb, xR, yb, s, c );
-  
+  printf("**************\n");
   while ( yb < ym ){
     draw_line( xL, yb, xR, yb, s, c );
 
@@ -257,17 +153,18 @@ void scan_line( struct matrix *polygons,
     xL += d0;
     xR += d1;
     yb += 1;
-/*
-    if (xL >= 300 || xL <= 100){
-      printf("xL extreme 01\n");
+
+    if (xL >= 220 || xL <= 180){
+      printf("yb < ym: xL extreme, %f\nd0 = %f\n", xL, d0);
     }
-    if (xR >= 300 || xR <= 100){
-      printf("xR extreme 01\n");
+    if (xR >= 220 || xR <= 180){
+      printf("yb < ym: xR extreme, %f\nd1 = %f\n----------\n", xR, d1);
     }
     //printf("From %f to %f\n", xL, xR);
-*/
   }
+
   draw_line( xL, yb, xR, yb, s, c );
+
   if ((double)(yt - ym) > .001) {
     d1 = ((xt-xm) / (double)(yt -ym));
   }
@@ -278,34 +175,22 @@ void scan_line( struct matrix *polygons,
 
   //d1 = ( ( xt - xm ) / ( yt - ym ) );
   xR = xm;
-
-  printf("2: d0 is: %f\n", d0);
-  printf("2: d1 is: %f\n", d1);
-
+/*
+  printf("d0 is: %f\n", d0);
+  printf("d1 is: %f\n", d1);
+*/
   while ( ym < yt ){
     //(xb + Delta0, yb+1) → (xb+ Delta1, yb+1)
     xL += d0;
     xR += d1;
     ym += 1;
     
-    if (xL >= 300 || xL <= 100){
-      printf("xL extreme 02\n");
+    if (xL >= 220 || xL <= 180){
+      printf("ym < yt: xL extreme, %f\nd0 = %f\n", xL, d0);
     }
-    if (xR >= 300 || xR <= 100){
-      printf("xR extreme 02\n");
+    if (xR >= 220 || xR <= 180){
+      printf("ym < yt: xR extreme, %f\nd1 = %f\n", xR, d1);
     }
-    
-
-    if (xm >= 300 || xm <= 100){
-      printf("xm extreme 02\n");
-    }
-    if (xb >= 300 || xb <= 100){
-      printf("xb extreme 02\n");
-    }
-    if (xt >= 300 || xt <= 100){
-      printf("xt extreme 02\n");
-    }
-  
     draw_line( xL, ym, xR, ym, s, c );
     //printf("In ym<=yt\n");
   }
@@ -332,7 +217,7 @@ void draw_polygons( struct matrix *polygons, screen s, color c ) {
   for( i=0; i < polygons->lastcol-2; i+=3 ) {
 
     if ( calculate_dot( polygons, i ) < 0 ) {
-      printf("\ndrawing polygon\n");
+      //printf("\ndrawing polygon\n");
       draw_line( polygons->m[0][i],
      polygons->m[1][i],
      polygons->m[0][i+1],
@@ -350,8 +235,9 @@ void draw_polygons( struct matrix *polygons, screen s, color c ) {
      s, c);
       //if (i<4){
       //printf("Point: %f\n", polygons->m[0][i]);
+      //printf("\n");
       scan_line( polygons, s, c, i);
-      printf("scannedLined this\n");
+      //printf("scannedLined this\n");
       
     }
       
