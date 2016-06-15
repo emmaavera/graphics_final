@@ -46,8 +46,8 @@ Inputs:   double x0, double y0,
 void scan_line( struct matrix *polygons,
     screen s, color c, int i ) {
 
-  double xt, xm, xb, yt, ym, yb, xL, xR, yL, yR;
-  double d0, d1;
+  float xt, xm, xb, yt, ym, yb, xL, xR, yL, yR;
+  float d0, d1;
 
   c.blue = 200;
   c.green = rand()%255;
@@ -56,11 +56,9 @@ void scan_line( struct matrix *polygons,
   float x0, y0, x1, y1;  
   int xy=1;
 
-  int T, M, B;
-
-  T = 0;
-  M = 1;
-  B = 2;
+  int T = 0;
+  int M = 1;
+  int B = 2;
 
   int temp;
   if(polygons->m[xy][i+M] < polygons->m[xy][i+B]){
@@ -106,14 +104,17 @@ void scan_line( struct matrix *polygons,
   yb = polygons->m[1][i+B];
 
   //assign d0 and d1
-  if ( (double)(yt - yb) > .001){
-    d0 = (double)((double)(xt-xb) / (double)(yt - yb));
+  if ( (float)(yt - yb) > .001){
+   // d0 = (float)((xt-xb) / (yt - yb));
+    d0 = (float)((xt-x0) / (yt - y0));
   }
   else {
     d0 = xt-xb;
   }
-  if ( (double)(ym - yb) > .001){
-    d1 = (double)((double)(xm-xb) / (double)(ym - yb)); // d1 = ( ( xt - xm ) / ( yt - ym ) );
+  if ( (float)(ym - yb) > .001){
+    //d1 = (float)((xm-xb) / (ym - yb)); 
+      // d1 = ( ( xt - xm ) / ( yt - ym ) );
+    d1 = (float)((xm-x1) / (ym - y1));
   }
   
   if (d1 > 9999 || d1 < -9999){
@@ -131,7 +132,8 @@ void scan_line( struct matrix *polygons,
   printf("d1 is: %f\n\n", d1);
   */
   
-  xR = xb; xL = xb;
+  xR = xb;
+  xL = xb;
 /*
 
   if (xm==xt){
@@ -145,7 +147,7 @@ void scan_line( struct matrix *polygons,
   }
 */
   draw_line( xL, yb, xR, yb, s, c );
-  printf("**************\n");
+  printf("**************\n"); //new triangle
   while ( yb < ym ){
     draw_line( xL, yb, xR, yb, s, c );
 
@@ -158,15 +160,16 @@ void scan_line( struct matrix *polygons,
       printf("yb < ym: xL extreme, %f\nd0 = %f\n", xL, d0);
     }
     if (xR >= 220 || xR <= 180){
-      printf("yb < ym: xR extreme, %f\nd1 = %f\n----------\n", xR, d1);
+      printf("yb < ym: xR extreme, %f\nd1 = %f\n----------\n", xR, d1); //lots of dashes=you've reached the middle of the triangle
     }
     //printf("From %f to %f\n", xL, xR);
   }
 
   draw_line( xL, yb, xR, yb, s, c );
 
-  if ((double)(yt - ym) > .001) {
-    d1 = ((xt-xm) / (double)(yt -ym));
+  if ((double)(yt - ym) > .001) { //change d1
+    //d1 = ((xt-xm) / (double)(yt -ym));
+    d1 = ((xt-x1) / (double)(yt -y1));
   }
   else{ 
     d1 = xt - xm;
@@ -199,6 +202,169 @@ void scan_line( struct matrix *polygons,
   //draw_line( xL, yt, xR, yt, s, c );
   
 }
+
+//scanline conversion with zbuffer implemented
+
+void scan_line_zbuffer ( struct matrix *polygons, zbuffer zbuf,
+    screen s, color c, int i ) {
+
+  float xt, xm, xb, yt, ym, yb, xL, xR, yL, yR;
+  float d0, d1;
+
+  c.blue = 200;
+  c.green = rand()%255;
+  c.red = rand()%255;
+
+  float x0, y0, x1, y1;  
+  int xy=1;
+
+  int T = 0;
+  int M = 1;
+  int B = 2;
+
+  int temp;
+  if(polygons->m[xy][i+M] < polygons->m[xy][i+B]){
+    temp = M;
+    M = B;
+    B = temp;
+  }
+  if(polygons->m[xy][i+T] < polygons->m[xy][i+M]){
+    temp = T;
+    T = M;
+    M = temp;
+  }
+  if(polygons->m[xy][i+M] < polygons->m[xy][i+B]){
+    temp = M;
+    M = B;
+    B = temp;
+  }
+  if(polygons->m[xy][i+T]==polygons->m[xy][i+M]){
+    if(xy==1 && (polygons->m[0][i+T]<polygons->m[0][i+M])){
+      temp = T;
+      T = M;
+      M = temp;
+    }
+  }
+  if(polygons->m[1][i+B]==polygons->m[1][i+M]){
+    if(xy==1 && (polygons->m[0][i+M]<polygons->m[0][i+B])){
+      temp = B;
+      B = M;
+      M = temp;
+    }
+  }
+
+  x0 = polygons->m[0][i+B];
+  y0 = polygons->m[1][i+B];
+  x1 = polygons->m[0][i+B];
+  y1 = polygons->m[1][i+B];
+
+  xt = polygons->m[0][i+T];
+  yt = polygons->m[1][i+T];
+  xm = polygons->m[0][i+M];
+  ym = polygons->m[1][i+M];
+  xb = polygons->m[0][i+B];
+  yb = polygons->m[1][i+B];
+
+  //assign d0 and d1
+  if ( (float)(yt - yb) > .001){
+   // d0 = (float)((xt-xb) / (yt - yb));
+    d0 = (float)((xt-x0) / (yt - y0));
+  }
+  else {
+    d0 = xt-xb;
+  }
+  if ( (float)(ym - yb) > .001){
+    //d1 = (float)((xm-xb) / (ym - yb)); 
+      // d1 = ( ( xt - xm ) / ( yt - ym ) );
+    d1 = (float)((xm-x1) / (ym - y1));
+  }
+  
+  if (d1 > 9999 || d1 < -9999){
+    d1 = xm-xb;
+  }
+  if (d0 > 9999 || d0 < -9999){
+    d0 = xt-xb;
+  }
+
+  /*
+  printf("yt is: %f\nym is: %f \nyb is: %f\n", yt, ym, yb);
+  printf("xt is: %f\nxm is: %f \nxb is: %f\n", xt, xm, xb);
+  
+  printf("d0 is: %f\n", d0);
+  printf("d1 is: %f\n\n", d1);
+  */
+  
+  xR = xb;
+  xL = xb;
+/*
+
+  if (xm==xt){
+    printf("xm equals xt\n");
+  }
+  if (xm==xb){
+    printf("xm equals xb\n");
+  }
+  if (xt==xb){
+    printf("xt equals xb\n");
+  }
+*/
+  draw_line( xL, yb, xR, yb, s, c );
+  printf("**************\n"); //new triangle
+  while ( yb < ym ){
+    draw_line( xL, yb, xR, yb, s, c );
+
+    //(xb + Delta0, yb+1) → (xb+ Delta1, yb+1)
+    xL += d0;
+    xR += d1;
+    yb += 1;
+
+    if (xL >= 220 || xL <= 180){
+      printf("yb < ym: xL extreme, %f\nd0 = %f\n", xL, d0);
+    }
+    if (xR >= 220 || xR <= 180){
+      printf("yb < ym: xR extreme, %f\nd1 = %f\n----------\n", xR, d1); //lots of dashes=you've reached the middle of the triangle
+    }
+    //printf("From %f to %f\n", xL, xR);
+  }
+
+  draw_line( xL, yb, xR, yb, s, c );
+
+  if ((double)(yt - ym) > .001) { //change d1
+    //d1 = ((xt-xm) / (double)(yt -ym));
+    d1 = ((xt-x1) / (double)(yt -y1));
+  }
+  else{ 
+    d1 = xt - xm;
+  }
+
+
+  //d1 = ( ( xt - xm ) / ( yt - ym ) );
+  xR = xm;
+/*
+  printf("d0 is: %f\n", d0);
+  printf("d1 is: %f\n", d1);
+*/
+  while ( ym < yt ){
+    //(xb + Delta0, yb+1) → (xb+ Delta1, yb+1)
+    xL += d0;
+    xR += d1;
+    ym += 1;
+    
+    if (xL >= 220 || xL <= 180){
+      printf("ym < yt: xL extreme, %f\nd0 = %f\n", xL, d0);
+    }
+    if (xR >= 220 || xR <= 180){
+      printf("ym < yt: xR extreme, %f\nd1 = %f\n", xR, d1);
+    }
+    draw_line( xL, ym, xR, ym, s, c );
+    //printf("In ym<=yt\n");
+  }
+  //xL += d0;
+  //xR += d1;
+  //draw_line( xL, yt, xR, yt, s, c );
+  
+}
+
 /*======== void draw_polygons() ==========
 Inputs:   struct matrix *polygons
           screen s

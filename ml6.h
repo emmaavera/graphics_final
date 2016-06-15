@@ -36,6 +36,8 @@ struct point_t {
 */
 typedef struct point_t color;
 
+typedef double zbuffer[XRES][YRES];
+
 /*
   Likewise, we can use screen as a data type representing
   an XRES x YRES array of colors.

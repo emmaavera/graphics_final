@@ -13,6 +13,14 @@ for red, green and blue respectively
 #include "ml6.h"
 #include "display.h"
 
+void clear_zbuffer(zbuffer zbuf){
+    int i, j;
+
+  for (i = 0; i < XRES; i++) 
+    for (j = 0; j < YRES; j++)
+      zbuf[i][j] = LONG_MIN;
+  }
+
 color change_color( int i ) {
   
   color c;
@@ -75,11 +83,26 @@ pixel 0, 0 located at the lower left corner of the screen
 02/12/10 09:09:00
 jdyrlandweaver
 ====================*/
+/*
 void plot( screen s, color c, int x, int y) {
   int newy = YRES - 1 - y;
   if ( x >= 0 && x < XRES && newy >=0 && newy < YRES )
     s[x][newy] = c;
+}*/
+
+//plot with z buffer
+void plot( screen s, color c, zbuffer zbuf, int x, int y, double z) {
+  int newy = YRES - 1 - y;
+  if ( x >= 0 && x < XRES && newy >=0 && newy < YRES ){
+    if (z > zbuf[x][newy]){
+      s[x][newy] = c;
+      zbuf[x][newy] = z;
+      printf("zbuffer executed\n");
+    }
+  }
 }
+
+
 
 /*======== void clear_screen() ==========
 Inputs:   screen s  

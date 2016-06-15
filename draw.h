@@ -18,6 +18,8 @@ void add_polygons( struct matrix * points,
 		   double x1, double y1, double z1,
 		   double x2, double y2, double z2);
 void scan_line( struct matrix *polygons, screen s, color c, int i );
+void scan_line_zbuffer ( struct matrix *polygons, zbuffer zbuf,
+    screen s, color c, int i );
 void draw_lines( struct matrix * points, screen s, color c);
 void draw_polygons( struct matrix * points, screen s, color c);
 
