@@ -18,7 +18,7 @@ void clear_zbuffer(zbuffer zbuf){
 
   for (i = 0; i < XRES; i++) 
     for (j = 0; j < YRES; j++)
-      zbuf[i][j] = LONG_MIN;
+      zbuf[i][j] = 0;
   }
 
 color change_color( int i ) {

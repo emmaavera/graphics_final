@@ -5,9 +5,10 @@
 
 #define MAX_STEPS 100
 
-void draw_line(int x0, int y0, 
+/*void draw_line(int x0, int y0, 
 	       int x1, int y1, 
-	       screen s, color c);
+	       screen s, color c);*/
+void draw_line(int x0, int y0, double z0, int x1, int y1, double z1, zbuffer zbuf, screen s, color c);
 void add_point( struct matrix * points, 
 		 double x, double y, double z);
 void add_edge( struct matrix * points, 
@@ -17,11 +18,13 @@ void add_polygons( struct matrix * points,
 		   double x0, double y0, double z0, 
 		   double x1, double y1, double z1,
 		   double x2, double y2, double z2);
-void scan_line( struct matrix *polygons, screen s, color c, int i );
-void scan_line_zbuffer ( struct matrix *polygons, zbuffer zbuf,
+//void scan_line( struct matrix *polygons, screen s, color c, int i );
+void scan_line( struct matrix *polygons, zbuffer zbuf,
     screen s, color c, int i );
-void draw_lines( struct matrix * points, screen s, color c);
-void draw_polygons( struct matrix * points, screen s, color c);
+//void draw_lines( struct matrix * points, screen s, color c);
+void draw_lines( struct matrix * points, zbuffer zbuf, screen s, color c);
+//void draw_polygons( struct matrix * points, screen s, color c);
+void draw_polygons( struct matrix *polygons, zbuffer zbuf, screen s, color c );
 
 //advanced shapes
 void add_circle( struct matrix * points, 

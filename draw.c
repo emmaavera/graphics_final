@@ -43,11 +43,12 @@ Inputs:   double x0, double y0,
     screen s, color c
 ====================*/
 
-void scan_line( struct matrix *polygons,
+void scan_line( struct matrix *polygons, zbuffer zbuf,
     screen s, color c, int i ) {
 
   float xt, xm, xb, yt, ym, yb, xL, xR, yL, yR;
   float d0, d1;
+  float zb, zt, zm;
 
   c.blue = 200;
   c.green = rand()%255;
@@ -146,10 +147,10 @@ void scan_line( struct matrix *polygons,
     printf("xt equals xb\n");
   }
 */
-  draw_line( xL, yb, xR, yb, s, c );
+  draw_line( xL, yb, zb, xR, yb, zb, zbuf, s, c );
   printf("**************\n"); //new triangle
   while ( yb < ym ){
-    draw_line( xL, yb, xR, yb, s, c );
+    draw_line( xL, yb, zb, xR, yb, zb, zbuf, s, c );
 
     //(xb + Delta0, yb+1) → (xb+ Delta1, yb+1)
     xL += d0;
@@ -165,7 +166,7 @@ void scan_line( struct matrix *polygons,
     //printf("From %f to %f\n", xL, xR);
   }
 
-  draw_line( xL, yb, xR, yb, s, c );
+  draw_line( xL, yb, zb, xR, yb, zb, zbuf, s, c );
 
   if ((double)(yt - ym) > .001) { //change d1
     //d1 = ((xt-xm) / (double)(yt -ym));
@@ -194,7 +195,7 @@ void scan_line( struct matrix *polygons,
     if (xR >= 220 || xR <= 180){
       printf("ym < yt: xR extreme, %f\nd1 = %f\n", xR, d1);
     }
-    draw_line( xL, ym, xR, ym, s, c );
+    draw_line( xL, ym, zm, xR, ym, zm, zbuf, s, c );
     //printf("In ym<=yt\n");
   }
   //xL += d0;
@@ -203,167 +204,7 @@ void scan_line( struct matrix *polygons,
   
 }
 
-//scanline conversion with zbuffer implemented
 
-void scan_line_zbuffer ( struct matrix *polygons, zbuffer zbuf,
-    screen s, color c, int i ) {
-
-  float xt, xm, xb, yt, ym, yb, xL, xR, yL, yR;
-  float d0, d1;
-
-  c.blue = 200;
-  c.green = rand()%255;
-  c.red = rand()%255;
-
-  float x0, y0, x1, y1;  
-  int xy=1;
-
-  int T = 0;
-  int M = 1;
-  int B = 2;
-
-  int temp;
-  if(polygons->m[xy][i+M] < polygons->m[xy][i+B]){
-    temp = M;
-    M = B;
-    B = temp;
-  }
-  if(polygons->m[xy][i+T] < polygons->m[xy][i+M]){
-    temp = T;
-    T = M;
-    M = temp;
-  }
-  if(polygons->m[xy][i+M] < polygons->m[xy][i+B]){
-    temp = M;
-    M = B;
-    B = temp;
-  }
-  if(polygons->m[xy][i+T]==polygons->m[xy][i+M]){
-    if(xy==1 && (polygons->m[0][i+T]<polygons->m[0][i+M])){
-      temp = T;
-      T = M;
-      M = temp;
-    }
-  }
-  if(polygons->m[1][i+B]==polygons->m[1][i+M]){
-    if(xy==1 && (polygons->m[0][i+M]<polygons->m[0][i+B])){
-      temp = B;
-      B = M;
-      M = temp;
-    }
-  }
-
-  x0 = polygons->m[0][i+B];
-  y0 = polygons->m[1][i+B];
-  x1 = polygons->m[0][i+B];
-  y1 = polygons->m[1][i+B];
-
-  xt = polygons->m[0][i+T];
-  yt = polygons->m[1][i+T];
-  xm = polygons->m[0][i+M];
-  ym = polygons->m[1][i+M];
-  xb = polygons->m[0][i+B];
-  yb = polygons->m[1][i+B];
-
-  //assign d0 and d1
-  if ( (float)(yt - yb) > .001){
-   // d0 = (float)((xt-xb) / (yt - yb));
-    d0 = (float)((xt-x0) / (yt - y0));
-  }
-  else {
-    d0 = xt-xb;
-  }
-  if ( (float)(ym - yb) > .001){
-    //d1 = (float)((xm-xb) / (ym - yb)); 
-      // d1 = ( ( xt - xm ) / ( yt - ym ) );
-    d1 = (float)((xm-x1) / (ym - y1));
-  }
-  
-  if (d1 > 9999 || d1 < -9999){
-    d1 = xm-xb;
-  }
-  if (d0 > 9999 || d0 < -9999){
-    d0 = xt-xb;
-  }
-
-  /*
-  printf("yt is: %f\nym is: %f \nyb is: %f\n", yt, ym, yb);
-  printf("xt is: %f\nxm is: %f \nxb is: %f\n", xt, xm, xb);
-  
-  printf("d0 is: %f\n", d0);
-  printf("d1 is: %f\n\n", d1);
-  */
-  
-  xR = xb;
-  xL = xb;
-/*
-
-  if (xm==xt){
-    printf("xm equals xt\n");
-  }
-  if (xm==xb){
-    printf("xm equals xb\n");
-  }
-  if (xt==xb){
-    printf("xt equals xb\n");
-  }
-*/
-  draw_line( xL, yb, xR, yb, s, c );
-  printf("**************\n"); //new triangle
-  while ( yb < ym ){
-    draw_line( xL, yb, xR, yb, s, c );
-
-    //(xb + Delta0, yb+1) → (xb+ Delta1, yb+1)
-    xL += d0;
-    xR += d1;
-    yb += 1;
-
-    if (xL >= 220 || xL <= 180){
-      printf("yb < ym: xL extreme, %f\nd0 = %f\n", xL, d0);
-    }
-    if (xR >= 220 || xR <= 180){
-      printf("yb < ym: xR extreme, %f\nd1 = %f\n----------\n", xR, d1); //lots of dashes=you've reached the middle of the triangle
-    }
-    //printf("From %f to %f\n", xL, xR);
-  }
-
-  draw_line( xL, yb, xR, yb, s, c );
-
-  if ((double)(yt - ym) > .001) { //change d1
-    //d1 = ((xt-xm) / (double)(yt -ym));
-    d1 = ((xt-x1) / (double)(yt -y1));
-  }
-  else{ 
-    d1 = xt - xm;
-  }
-
-
-  //d1 = ( ( xt - xm ) / ( yt - ym ) );
-  xR = xm;
-/*
-  printf("d0 is: %f\n", d0);
-  printf("d1 is: %f\n", d1);
-*/
-  while ( ym < yt ){
-    //(xb + Delta0, yb+1) → (xb+ Delta1, yb+1)
-    xL += d0;
-    xR += d1;
-    ym += 1;
-    
-    if (xL >= 220 || xL <= 180){
-      printf("ym < yt: xL extreme, %f\nd0 = %f\n", xL, d0);
-    }
-    if (xR >= 220 || xR <= 180){
-      printf("ym < yt: xR extreme, %f\nd1 = %f\n", xR, d1);
-    }
-    draw_line( xL, ym, xR, ym, s, c );
-    //printf("In ym<=yt\n");
-  }
-  //xL += d0;
-  //xR += d1;
-  //draw_line( xL, yt, xR, yt, s, c );
-  
-}
 
 /*======== void draw_polygons() ==========
 Inputs:   struct matrix *polygons
@@ -377,28 +218,32 @@ triangles
 04/16/13 13:13:27
 jdyrlandweaver
 ====================*/
-void draw_polygons( struct matrix *polygons, screen s, color c ) {
+void draw_polygons( struct matrix *polygons, zbuffer zbuf, screen s, color c ) {
   
   int i;  
   for( i=0; i < polygons->lastcol-2; i+=3 ) {
 
     if ( calculate_dot( polygons, i ) < 0 ) {
       //printf("\ndrawing polygon\n");
-      draw_line( polygons->m[0][i],
-     polygons->m[1][i],
+      draw_line( polygons->m[0][i], polygons->m[1][i],
+     polygons->m[2][i]
      polygons->m[0][i+1],
      polygons->m[1][i+1],
-     s, c);
+     polygons->m[2][i+1], zbuf, s, c);
       draw_line( polygons->m[0][i+1],
      polygons->m[1][i+1],
+     polygons->m[2][i+1]
      polygons->m[0][i+2],
      polygons->m[1][i+2],
-     s, c);
+     polygons->m[2][i+2],
+     zbuf, s, c);
       draw_line( polygons->m[0][i+2],
      polygons->m[1][i+2],
+     polygons->m[2][i+2]
      polygons->m[0][i],
      polygons->m[1][i],
-     s, c);
+     polygons->m[2][i],
+     zbuf, s, c);
       //if (i<4){
       //printf("Point: %f\n", polygons->m[0][i]);
       //printf("\n");
@@ -892,7 +737,7 @@ Returns:
 Go through points 2 at a time and call draw_line to add that line
 to the screen
 ====================*/
-void draw_lines( struct matrix * points, screen s, color c) {
+void draw_lines( struct matrix * points, zbuffer zbuf, screen s, color c) {
 
   int i;
  
@@ -904,8 +749,8 @@ void draw_lines( struct matrix * points, screen s, color c) {
 
   for ( i = 0; i < points->lastcol - 1; i+=2 ) {
 
-    draw_line( points->m[0][i], points->m[1][i], 
-	       points->m[0][i+1], points->m[1][i+1], s, c);
+    draw_line( points->m[0][i], points->m[1][i], points->m[2][i],
+	       points->m[0][i+1], points->m[1][i+1], points->m[2][i+1], zbuf, s, c);
     //FOR DEMONSTRATION PURPOSES ONLY
     //draw extra pixels so points can actually be seen    
     /*
@@ -930,12 +775,14 @@ void draw_lines( struct matrix * points, screen s, color c) {
 }
 
 
-void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
+void draw_line(int x0, int y0, double z0, int x1, int y1, double z1, zbuffer zbuf, screen s, color c) {
  
   int x, y, d, dx, dy;
+  double z, dz;
 
   x = x0;
   y = y0;
+  z = z0;
   
   //swap points so we're always draing left to right
   if ( x0 > x1 ) {
@@ -943,6 +790,7 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
     y = y1;
     x1 = x0;
     y1 = y0;
+    z1=z0;
   }
 
   //need to know dx and dy for this version
@@ -957,7 +805,7 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
       d = dy - ( dx / 2 );
   
       while ( x <= x1 ) {
-	plot(s, c, x, y);
+	plot(s, c, zbuf, x, y, z);
 
 	if ( d < 0 ) {
 	  x = x + 1;
@@ -976,7 +824,7 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
       d = ( dy / 2 ) - dx;
       while ( y <= y1 ) {
 
-	plot(s, c, x, y );
+	plot(s, c, zbuf, x, y, z);
 	if ( d > 0 ) {
 	  y = y + 1;
 	  d = d - dx;
@@ -1000,7 +848,7 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
   
       while ( x <= x1 ) {
 
-	plot(s, c, x, y);
+	plot(s, c, zbuf, x, y, z);
 
 	if ( d > 0 ) {
 	  x = x + 1;
@@ -1021,7 +869,7 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
 
       while ( y >= y1 ) {
 	
-	plot(s, c, x, y );
+	plot(s, c, zbuf, x, y, z);
 	if ( d < 0 ) {
 	  y = y - 1;
 	  d = d + dx;
