@@ -225,25 +225,9 @@ void draw_polygons( struct matrix *polygons, zbuffer zbuf, screen s, color c ) {
 
     if ( calculate_dot( polygons, i ) < 0 ) {
       //printf("\ndrawing polygon\n");
-      draw_line( polygons->m[0][i], polygons->m[1][i],
-     polygons->m[2][i]
-     polygons->m[0][i+1],
-     polygons->m[1][i+1],
-     polygons->m[2][i+1], zbuf, s, c);
-      draw_line( polygons->m[0][i+1],
-     polygons->m[1][i+1],
-     polygons->m[2][i+1]
-     polygons->m[0][i+2],
-     polygons->m[1][i+2],
-     polygons->m[2][i+2],
-     zbuf, s, c);
-      draw_line( polygons->m[0][i+2],
-     polygons->m[1][i+2],
-     polygons->m[2][i+2]
-     polygons->m[0][i],
-     polygons->m[1][i],
-     polygons->m[2][i],
-     zbuf, s, c);
+      draw_line( polygons->m[0][i], polygons->m[1][i], polygons->m[2][i], polygons->m[0][i+1], polygons->m[1][i+1], polygons->m[2][i+1], zbuf, s, c);
+      draw_line( polygons->m[0][i+1], polygons->m[1][i+1],polygons->m[2][i+1],polygons->m[0][i+2],polygons->m[1][i+2],polygons->m[2][i+2], zbuf, s, c);
+      draw_line( polygons->m[0][i+2],polygons->m[1][i+2],polygons->m[2][i+2],polygons->m[0][i], polygons->m[1][i],polygons->m[2][i],zbuf, s, c);
       //if (i<4){
       //printf("Point: %f\n", polygons->m[0][i]);
       //printf("\n");
