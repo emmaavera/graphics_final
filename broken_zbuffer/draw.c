@@ -231,7 +231,7 @@ void draw_polygons( struct matrix *polygons, zbuffer zbuf, screen s, color c ) {
       //if (i<4){
       //printf("Point: %f\n", polygons->m[0][i]);
       //printf("\n");
-      scan_line( polygons, s, c, i);
+      scan_line( polygons, zbuf, s, c, i);
       //printf("scannedLined this\n");
       
     }
